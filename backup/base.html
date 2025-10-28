@@ -1,0 +1,30 @@
+<!-- 缩进两个空格，因为层级更多-->
+
+<p>    
+  <a href="{% url 'learning_logs:index' %}">Learning Log</a> - 
+  <a href="{% url 'learning_logs:topics' %}">Topics</a>-
+  {% if user.is_authenticated %}
+    Hello,{{ user.username }}.
+    <form action="{% url 'users:logout' %}" method="post">
+      {% csrf_token %}
+      <button name="submit">Log out</button>
+    </form>
+  {% else %}
+    <a href="{% url 'users:register' %}">Register</a> -
+    <a href="{% url 'users:login' %}">Log in</a>
+  {% endif %}
+</p>
+
+{% block content %}{% endblock content %}
+
+
+<!-- 单行注释-->
+
+<!-- 
+   多行注释：
+   1. 下面是导航栏组件
+   2. 包含首页、分类、关于我们三个菜单
+-->
+
+
+<!-- 注释掉暂时不用的代码（调试时常用） -->

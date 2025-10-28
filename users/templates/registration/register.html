@@ -1,0 +1,13 @@
+{% extends "learning_logs/base.html" %}
+
+{% block content %}
+
+  <form method="post" action="{% url 'users:register' %}">
+    {% csrf_token %}   <!--避免跨站攻击-->
+    {{ form.as_p}}  <!--在表单中显示所有字段-->
+
+    <button name="submit">Register</button>
+    <input type="hidden" name="next" value="{% url 'learning_logs:index' %}" />
+  </form>
+
+{% endblock content %}
