@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import dj_database_url  # 需先安装：pip install dj-database-url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-g0fl*n*4yl*jrue4-4*=eb)zu+aftfniwcn=)+y2hh&r4==s@^'
+SECRET_KEY = os.environ.get('SECRET_KEY','django-insecure-g0fl*n*4yl*jrue4-4*=eb)zu+aftfniwcn=)+y2hh&r4==s@^')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost','192.168.31.142']
+ALLOWED_HOSTS =ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS',['127.0.0.1','localhost','192.168.31.142'])
 
 
 # Application definition
@@ -80,12 +82,25 @@ WSGI_APPLICATION = 'learning_log.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+
+
+# 生产环境（Render）使用 PostgreSQL，本地开发默认使用 SQLite
 DATABASES = {
-    'default': {
+    'default': dj_database_url.config(
+        # 优先从环境变量读取 Render 自动注入的数据库连接 URL
+        default=os.environ.get('DATABASE_URL'),
+        # 本地开发时，默认使用 SQLite（避免本地无 PostgreSQL 时报错）
+        conn_max_age=600,  # 数据库连接超时时间（600 秒）
+        engine='django.db.backends.postgresql',  # 明确指定数据库引擎为 PostgreSQL
+    )
+}
+
+# 本地开发兼容：若未设置 DATABASE_URL 环境变量，自动切换回 SQLite
+if not os.environ.get('DATABASE_URL'):
+    DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-}
 
 
 # Password validation
